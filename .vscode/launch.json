@@ -1,0 +1,52 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:mosearch}",
+            "name": "Debug mosearch",
+            "program": "${workspaceFolder:mosearch}/.build/debug/mosearch",
+            "preLaunchTask": "swift: Build Debug mosearch"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:mosearch}",
+            "name": "Release mosearch",
+            "program": "${workspaceFolder:mosearch}/.build/release/mosearch",
+            "preLaunchTask": "swift: Build Release mosearch"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:mosearch}",
+            "name": "Debug Mosearch",
+            "program": "${workspaceFolder:mosearch}/.build/debug/Mosearch",
+            "preLaunchTask": "swift: Build Debug Mosearch"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:mosearch}",
+            "name": "Release Mosearch",
+            "program": "${workspaceFolder:mosearch}/.build/release/Mosearch",
+            "preLaunchTask": "swift: Build Release Mosearch"
+        }
+    ]
+}
