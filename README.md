@@ -1,7 +1,7 @@
-# mosearch My Own Search Engine
+# mosearch | My Own Search Engine
 
 ## 概要
-Swiftで作成した自作検索エンジンです。
+Swiftで作成した自作検索エンジンです。（作り途中）
 
 ## Todo
 - [x] Analyzer
