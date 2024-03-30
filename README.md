@@ -1,5 +1,17 @@
 # mosearch My Own Search Engine
 
+## 概要
+Swiftで作成した自作検索エンジンです。
+
+## Todo
+- [x] Analyzer
+    - [x] CharacterFilter
+    - [x] Tokenizer
+    - [x] TokenFilter
+- [ ] Indexer
+- [ ] Searcher
+  - [ ] Sorter
+- [ ] Storage
 
 ## 参考资料
 ### 検索エンジン
