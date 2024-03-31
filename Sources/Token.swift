@@ -17,4 +17,7 @@ public struct TokenStream {
         self.tokens = tokens
     }
     public var tokens: [Token]
+    public func size() -> Int {
+        return self.tokens.count
+    }
 }
