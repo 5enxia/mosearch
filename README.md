@@ -8,10 +8,13 @@ Swiftで作成した自作検索エンジンです。（作り途中）
     - [x] CharacterFilter
     - [x] Tokenizer
     - [x] TokenFilter
-- [ ] Indexer
-- [ ] Searcher
-  - [ ] Sorter
+- [x] Indexer
+- [x] Searcher
+  - [x] Sorter
 - [ ] Storage
+
+## Dependencies
+- [SQLite](https://github.com/stephencelis/SQLite.swift)
 
 ## 参考资料
 ### 検索エンジン

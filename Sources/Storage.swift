@@ -2,6 +2,7 @@ public protocol Storage {
     func countDocuments() -> Result<Int, Error> // ドキュメント数を返す
     func addDocument(_ doc: Document) -> Result<DocumentID, Error> // ドキュメントを追加し、IDを返す
     func getDocuments(_ docIds: [DocumentID]) -> Result<[Document], Error> // 複数IDから複数ドキュメントを返す
+    func getAllDocuments() -> Result<[Document], Error> // 全てのドキュメントを返す
     func addToken(_ token: Token) -> Result<TokenID, Error> // トークンを挿入する。挿入したドキュメントのIDを返す
     func getTokenByTerm(_ term: String) -> Result<Token?, Error> // 語句からトークンを取得する
     func getTokenByTerms(_ terms: [String]) -> Result<[Token], Error> // 語句からトークンを取得する
@@ -10,6 +11,10 @@ public protocol Storage {
 }
 
 public struct MockStorage: Storage {
+    public func getAllDocuments() -> Result<[Document], Error> {
+        .success([])
+    }
+
     // TODO: あとで実装
     public func countDocuments() -> Result<Int, Error> {
         return .success(0)
