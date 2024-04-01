@@ -10,7 +10,7 @@ public struct PostingList {
     var postings: Postings
 
     // ポスティングリストのサイズ（ドキュメント数）を返す
-    public var size: Int {
+    public func size() -> Int {
         var size = 0
         var current: Postings? = self.postings
         while current != nil {
@@ -21,7 +21,7 @@ public struct PostingList {
     }
 
     // あるドキュメントID内のトークンの出現数を返す
-    public func appearanceCountInDocument(documentId: DocumentID) -> Int {
+    public func appearanceCountInDocument(_ documentId: DocumentID) -> Int {
         var count = 0
         var current: Postings? = self.postings
         while current != nil {

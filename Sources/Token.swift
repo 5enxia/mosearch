@@ -20,4 +20,8 @@ public struct TokenStream {
     public func size() -> Int {
         return self.tokens.count
     }
+
+    public func terms() -> [String] {
+        return self.tokens.map { $0.term }
+    }
 }
