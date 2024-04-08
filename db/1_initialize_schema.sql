@@ -1,3 +1,4 @@
+-- 1_initialize_schema.sql
 drop table if exists documents;
 create table documents (
     id integer primary key autoincrement not null,

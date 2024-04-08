@@ -54,4 +54,14 @@ public class Postings {
         postings.next = self.next
         self.next = postings
     }
+
+    public func toBytes() -> [Byte] {
+        var bytes: [Byte] = []
+        bytes.append(contentsOf: documentId.toBytes())
+        bytes.append(contentsOf: UInt64(positions.count).toBytes())
+        for position in positions {
+            bytes.append(contentsOf: position.toBytes())
+        }
+        return bytes
+    }
 }
