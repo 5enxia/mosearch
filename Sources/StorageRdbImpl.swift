@@ -55,9 +55,27 @@ public struct StorageRdbImpl: Storage {
         }
     }
 
-    // TODO: あとで実装
-    public func getDocuments(_ docs: [DocumentID]) -> Swift.Result<[Document], Error> {
-        return .success([])
+    public func getDocuments(_ ids: [DocumentID]) -> Swift.Result<[Document], Error> {
+        var docs: [Document] = []
+        if ids.isEmpty {
+            return .success([])
+        }
+        let intIds = ids.map {
+            Int($0)
+        }
+        let table = Table("documents")
+        let id = Expression<Int>("id")
+        let body = Expression<String>("body")
+        let tokenCount = Expression<Int>("token_count")
+        let query =  table.filter(intIds.contains(id))
+        do {
+            for row in try self.db.prepare(query) {
+                docs.append(Document(id: DocumentID(row[id]), body: row[body], tokenCount: row[tokenCount]))
+            }
+            return .success(docs)
+        } catch {
+            return .failure(error)
+        }
     }
 
     // TODO: あとで実装
