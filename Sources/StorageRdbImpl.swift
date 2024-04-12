@@ -148,9 +148,19 @@ public struct StorageRdbImpl: Storage {
         }
     }
 
-    // TODO: あとで実装
     public func getTokenByTerm(_ term: String) -> Swift.Result<Token?, Error> {
-        return .success(Token(id: 0, term: term))
+        let table = Table("tokens")
+        let id = Expression<Int>("id")
+        let termExp = Expression<String>("term")
+        do {
+            let query = table.where(termExp == term)
+            for row in try self.db.prepare(query) {
+                return .success(Token(id: TokenID(row[id]), term: row[termExp], kana: ""))
+            }
+        } catch {
+            return .failure(error)
+        }
+        return .success(nil)
     }
 
     // TODO: あとで実装
