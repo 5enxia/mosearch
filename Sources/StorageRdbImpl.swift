@@ -83,9 +83,15 @@ public struct StorageRdbImpl: Storage {
         }
     }
 
-    // TODO: あとで実装
     public func addToken(_ token: Token) -> Swift.Result<TokenID, Error> {
-        return .success(0)
+        let table = Table("documents")
+        let term = Expression<String>("term")
+        do {
+            let rowId = try self.db.run(table.insert(term <- token.term))
+            return .success(TokenID(rowId)) 
+        } catch {
+            return .failure(error)
+        }
     }
 
     public func getInvertedIndexByTokenIDs(_ tokenIds: [TokenID]) -> Swift.Result<InvertedIndex, Error> {
