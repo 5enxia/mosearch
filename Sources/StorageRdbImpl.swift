@@ -1,10 +1,12 @@
+import Foundation
 import SQLite
 
 public typealias Byte = UInt8
 
 public struct EncodedInvertedIndex: Codable {
     let tokenId: TokenID
-    let postingList: [Byte]
+    // let postingList: [Byte]
+    let postingList: String
 }
 
 public struct StorageRdbImpl: Storage {
@@ -51,12 +53,11 @@ public struct StorageRdbImpl: Storage {
         return .success(0)
     }
 
-    // TODO: あとで実装
     public func getInvertedIndexByTokenIDs(_ tokenIds: [TokenID]) -> Swift.Result<InvertedIndex, Error> {
         if tokenIds.isEmpty {
             return .success([:])
         }
-        var encode: [EncodedInvertedIndex] = []
+        var encoded: [EncodedInvertedIndex] = []
 
         do {
             let invertedIndexes = Table("inverted_indexes")
@@ -64,17 +65,46 @@ public struct StorageRdbImpl: Storage {
             let query = invertedIndexes.filter(tokenIds.contains(tokenIdExp))
             for row in try self.db.prepare(query) {
                 let tokenId = TokenID(row[tokenIdExp])
-                let postingList = row[Expression<Blob>("posting_list")]
+                // let postingList = row[Expression<Blob>("posting_list")]
+                let postingList = row[Expression<String>("posting_list")]
+                encoded.append(EncodedInvertedIndex(tokenId: tokenId, postingList: postingList))
             }
-            return .success([:])
+            let decoded = self.decode(encoded)
+            switch decoded {
+            case .success(let d):
+                return .success(d)
+            case .failure(let error):
+                return .failure(error)
+            }
         } catch(let error) {
             return .failure(error)
         }
     }
     
-    // TODO: あとで実装
     public func upsertInvertedIndex(_ invertedIndex: InvertedIndex) -> Swift.Result<Void, Error> {
-        return .success(())
+        let encode = self.encode(invertedIndex)
+        switch encode {
+        case .success(let e):
+            do {
+                let invertedIndexes = Table("inverted_indexes")
+                let tokenIdExp = Expression<Int>("token_id")
+                let postingListExp = Expression<String>("posting_list")
+                for e in e {
+                    let query = invertedIndexes.filter(tokenIdExp == Int(e.tokenId))
+                    if try self.db.run(query.update(postingListExp <- e.postingList)) == 0 {
+                        try self.db.run(invertedIndexes.insert(
+                            tokenIdExp <- Int(e.tokenId),
+                            postingListExp <- e.postingList
+                        ))
+                    }
+                }
+                return .success(())
+            } catch(let error) {
+                return .failure(error)
+            }
+        case .failure(let error):
+            return .failure(error)
+        }
     }
 
     // TODO: あとで実装
@@ -99,7 +129,13 @@ public struct StorageRdbImpl: Storage {
                 p = p?.next
             } 
             if let p {
-                encodedInvertedIndex.append(EncodedInvertedIndex(tokenId: tokenId, postingList: p.toBytes()))
+                let encoder = JSONEncoder()
+                do {
+                    let data = try encoder.encode(p)
+                    encodedInvertedIndex.append(EncodedInvertedIndex(tokenId: tokenId, postingList: data.base64EncodedString()))
+                } catch {
+                    return .failure(error)
+                }
             }
         }
         return .success(encodedInvertedIndex)
@@ -108,8 +144,26 @@ public struct StorageRdbImpl: Storage {
     private func decode(_ e: [EncodedInvertedIndex]) -> Swift.Result<InvertedIndex, Error> {
         var invertedIndex: InvertedIndex = [:]
         for e in e {
-            let postingList = PostingList.fromBytes(e.postingList)
-            invertedIndex[e.tokenId] = postingList
+            let decoder = JSONDecoder()
+            guard let data = Data(base64Encoded: e.postingList) else {
+                let error = DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Failed to decode base64 string"))
+                return .failure(error)
+            }
+            do {
+                let postings = try decoder.decode(Postings.self, from: data)
+                let pl = PostingList(postings: postings)
+                // 差分から元の値に戻す
+                var p: Postings? = pl.postings
+                var beforeDocumentId: DocumentID = 0
+                while p != nil {
+                    p?.documentId += beforeDocumentId
+                    beforeDocumentId = p!.documentId
+                    p = p?.next
+                }
+                invertedIndex[e.tokenId] = pl
+            } catch {
+                return .failure(error)
+            }
         }
         return .success(invertedIndex)
     }

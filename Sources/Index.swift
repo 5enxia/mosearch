@@ -38,7 +38,7 @@ public struct PostingList {
     }
 }
 
-public class Postings {
+public class Postings: Codable {
     var documentId: DocumentID = 0
     var positions: [UInt64] = []
     var next: Postings? = nil
@@ -55,13 +55,23 @@ public class Postings {
         self.next = postings
     }
 
-    public func toBytes() -> [Byte] {
-        var bytes: [Byte] = []
-        bytes.append(contentsOf: documentId.toBytes())
-        bytes.append(contentsOf: UInt64(positions.count).toBytes())
-        for position in positions {
-            bytes.append(contentsOf: position.toBytes())
-        }
-        return bytes
+    private enum CodingKeys: String, CodingKey {
+        case documentId
+        case positions
+        case next
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(documentId, forKey: .documentId)
+        try container.encode(positions, forKey: .positions)
+        try container.encode(next, forKey: .next)
+    }
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.documentId = try container.decode(DocumentID.self, forKey: .documentId)
+        self.positions = try container.decode([UInt64].self, forKey: .positions)
+        self.next = try container.decodeIfPresent(Postings.self, forKey: .next)
     }
 }
