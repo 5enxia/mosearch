@@ -36,9 +36,14 @@ public struct StorageRdbImpl: Storage {
         }
     }
 
-    // TODO: あとで実装
     public func countDocuments() -> Swift.Result<Int, Error> {
-        return .success(0)
+        let table = Table("documents")
+        do {
+            let count = try self.db.scalar(table.count)
+            return .success(count)
+        } catch {
+            return .failure(error)
+        }
     }
 
     public func addDocument(_ doc: Document) -> Swift.Result<DocumentID, Error> {
