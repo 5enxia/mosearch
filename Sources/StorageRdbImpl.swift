@@ -155,7 +155,7 @@ public struct StorageRdbImpl: Storage {
         do {
             let query = table.where(termExp == term)
             for row in try self.db.prepare(query) {
-                return .success(Token(id: TokenID(row[id]), term: row[termExp], kana: ""))
+                return .success(Token(id: TokenID(row[id]), term: row[termExp]))
             }
         } catch {
             return .failure(error)
@@ -163,9 +163,23 @@ public struct StorageRdbImpl: Storage {
         return .success(nil)
     }
 
-    // TODO: あとで実装
     public func getTokenByTerms(_ terms: [String]) -> Swift.Result<[Token], Error> {
-        return .success(terms.map { Token(id: 0, term: $0) })
+        var tokens: [Token] = []
+        let table = Table("tokens")
+        let id = Expression<Int>("id")
+        let termExp = Expression<String>("term")
+        do {
+            let query = table
+                .filter(terms.contains(termExp))
+                .order(termExp)
+            for row in try self.db.prepare(query) {
+                let token = Token(id: TokenID(row[id]), term: row[termExp])
+                tokens.append(token)
+            }
+            return .success(tokens)
+        } catch {
+            return .failure(error)
+        }
     }
 
     private func encode(_ invertedIndex: InvertedIndex) -> Swift.Result<[EncodedInvertedIndex], Error> {
