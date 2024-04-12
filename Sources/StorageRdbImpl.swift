@@ -21,7 +21,19 @@ public struct StorageRdbImpl: Storage {
     }
 
     public func getAllDocuments() -> Swift.Result<[Document], Error> {
-        .success([])
+        var docs: [Document] = []
+        do {
+            let documents = Table("documents")
+            let id = Expression<Int>("id")
+            let body = Expression<String>("body")
+            let tokenCount = Expression<Int>("token_count")
+            for row in try self.db.prepare(documents) {
+                docs.append(Document(id: DocumentID(row[id]), body: row[body], tokenCount: row[tokenCount]))
+            }
+            return .success(docs)
+        } catch(let error) {
+            return .failure(error)
+        }
     }
 
     // TODO: あとで実装
