@@ -125,8 +125,8 @@ public struct StorageRdbImpl: Storage {
     }
     
     public func upsertInvertedIndex(_ invertedIndex: InvertedIndex) -> Swift.Result<Void, Error> {
-        let encode = self.encode(invertedIndex)
-        switch encode {
+        let encoded = self.encode(invertedIndex)
+        switch encoded {
         case .success(let e):
             do {
                 let invertedIndexes = Table("inverted_indexes")
@@ -186,8 +186,8 @@ public struct StorageRdbImpl: Storage {
 
     private func encode(_ invertedIndex: InvertedIndex) -> Swift.Result<[EncodedInvertedIndex], Error> {
         var encodedInvertedIndex: [EncodedInvertedIndex] = []
-        for (tokenId, postingList) in invertedIndex {
-            var p: Postings? = postingList.postings
+        for (k, v) in invertedIndex {
+            var p: Postings? = v.postings
             // 差分を取る
             var beforeDocumentId: DocumentID = 0
             while p != nil {
@@ -195,15 +195,15 @@ public struct StorageRdbImpl: Storage {
                 beforeDocumentId += p!.documentId
                 p = p?.next
             } 
-            if let p {
-                let encoder = JSONEncoder()
-                do {
-                    let data = try encoder.encode(p)
-                    encodedInvertedIndex.append(EncodedInvertedIndex(tokenId: tokenId, postingList: data.base64EncodedString()))
-                } catch {
-                    return .failure(error)
-                }
+            // if let p {
+            let encoder = JSONEncoder()
+            do {
+                let data = try encoder.encode(v.postings)
+                encodedInvertedIndex.append(EncodedInvertedIndex(tokenId: k, postingList: data.base64EncodedString()))
+            } catch {
+                return .failure(error)
             }
+            // }
         }
         return .success(encodedInvertedIndex)
     }
