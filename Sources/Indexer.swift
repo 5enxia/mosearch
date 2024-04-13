@@ -131,7 +131,7 @@ public class Indexer {
             return .success(())
         }
         // ある時
-        // ドキュメントに対応すrうポスチングがポスティングリストに存在するかどうかをチェック
+        // ドキュメントに対応するポスチングがポスティングリストに存在するかどうかをチェック
         // 存在する：nilになる前にループが終了する
         // 存在しない：nilになる
         var p: Postings? = postingList.postings
