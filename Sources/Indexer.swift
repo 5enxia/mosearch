@@ -169,11 +169,45 @@ public class Indexer {
         }
     }
 
-    // TODO: あとで実装
     private func merge(_ memory: PostingList, _ storage: PostingList?) -> PostingList {
         guard let storage else {
             return memory
         }
-        return memory
+
+        var merged: PostingList = PostingList()
+        var smaller, larger: Postings?
+
+        if memory.postings!.documentId <= storage.postings!.documentId {
+            merged.postings = memory.postings
+            smaller = memory.postings
+            larger = storage.postings
+        } else {
+            merged.postings = storage.postings
+            smaller = storage.postings
+            larger = memory.postings
+        }
+
+        while larger != nil {
+            if smaller?.next == nil {
+                smaller?.next = larger
+                break
+            }
+
+            if smaller!.next!.documentId < larger!.documentId {
+                smaller = smaller?.next
+            } else if smaller!.next!.documentId > larger!.documentId{
+                let largerNext = larger?.next
+                let smallerNext = smaller?.next
+                smaller?.next = larger
+                larger?.next = smallerNext
+                smaller = larger
+                larger = largerNext
+            } else if smaller!.next!.documentId == larger!.documentId {
+                smaller = smaller?.next
+                larger = larger?.next
+            }
+        }
+
+        return merged
     }
 }
