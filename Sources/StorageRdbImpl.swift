@@ -86,7 +86,7 @@ public struct StorageRdbImpl: Storage {
     }
 
     public func addToken(_ token: Token) -> Swift.Result<TokenID, Error> {
-        let table = Table("documents")
+        let table = Table("tokens")
         let term = Expression<String>("term")
         do {
             let rowId = try self.db.run(table.insert(term <- token.term))
