@@ -83,8 +83,16 @@ public class Indexer {
         return .success(())
     }
 
-    // TODO: あとで実装
     private func updateMemoryInvertedIndexByDocument(_ docId: DocumentID, _ tokens: TokenStream) -> Result<Void, Error> {
+        for (pos, token) in tokens.tokens.enumerated() {
+            let result = self.updateMemoryPostingListByToken(docId, token, UInt64(pos))
+            switch result {
+            case .success:
+                break
+            case .failure(let error):
+                return .failure(error)
+            }
+        }
         return .success(())
     }
 
