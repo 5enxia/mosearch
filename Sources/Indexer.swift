@@ -149,7 +149,7 @@ public class Indexer {
 
         // 対象ドキュメントのポスティングが存在しないとき
         // 追加するドキュメントのIDが最小かどうかをチェック
-        if docId < postingList.postings.documentId {
+        if docId < postingList.postings!.documentId {
             // 最小の場合
             postingList.postings = Postings(documentId: docId, positions: [pos], next: postingList.postings)
             self.invertedIndex[tokenId] = postingList
@@ -159,11 +159,11 @@ public class Indexer {
             // ポスティングを挿入する位置を探す
             var t = postingList.postings
             // TODO; Unwrapwをguard letに変更したい
-            while t.next != nil && t.next!.documentId < docId {
-                t = t.next!
+            while t?.next != nil && t!.next!.documentId < docId {
+                t = t!.next!
             }
             // ポスティングを挿入
-            t.pushBack(Postings(documentId: docId, positions: [pos]))
+            t?.pushBack(Postings(documentId: docId, positions: [pos]))
             self.invertedIndex[tokenId] = postingList
             return .success(())
         }

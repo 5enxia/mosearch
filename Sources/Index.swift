@@ -7,7 +7,7 @@ extension InvertedIndex {
 }
 
 public struct PostingList {
-    var postings: Postings
+    var postings: Postings?
 
     // ポスティングリストのサイズ（ドキュメント数）を返す
     public func size() -> Int {
