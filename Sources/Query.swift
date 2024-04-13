@@ -22,6 +22,12 @@ public struct PhraseQuery {
     var analyzer: Analyzer
     var sorter: Sorter
 
+    public init(phrase: String, analyzer: Analyzer, sorter: Sorter) {
+        self.phrase = phrase
+        self.analyzer = analyzer
+        self.sorter = sorter
+    }
+
     public func searcher(storage: Storage) -> Searcher {
         let tokenStream = self.analyzer.analyze(self.phrase)
         return PhraseSearcher(tokenStream: tokenStream, storage: storage, sorter: self.sorter)
