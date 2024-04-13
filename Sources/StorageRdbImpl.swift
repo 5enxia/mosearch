@@ -187,23 +187,22 @@ public struct StorageRdbImpl: Storage {
     private func encode(_ invertedIndex: InvertedIndex) -> Swift.Result<[EncodedInvertedIndex], Error> {
         var encodedInvertedIndex: [EncodedInvertedIndex] = []
         for (k, v) in invertedIndex {
-            var p: Postings? = v.postings
             // 差分を取る
+            var p: Postings? = v.postings
             var beforeDocumentId: DocumentID = 0
             while p != nil {
                 p?.documentId -= beforeDocumentId
                 beforeDocumentId += p!.documentId
                 p = p?.next
             } 
-            // if let p {
             let encoder = JSONEncoder()
             do {
                 let data = try encoder.encode(v.postings)
-                encodedInvertedIndex.append(EncodedInvertedIndex(tokenId: k, postingList: data.base64EncodedString()))
+                let encoded = EncodedInvertedIndex(tokenId: k, postingList: data.base64EncodedString())
+                encodedInvertedIndex.append(encoded)
             } catch {
                 return .failure(error)
             }
-            // }
         }
         return .success(encodedInvertedIndex)
     }
