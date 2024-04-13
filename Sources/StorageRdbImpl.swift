@@ -50,9 +50,11 @@ public struct StorageRdbImpl: Storage {
         do {
             let documents = Table("documents")
             let body = Expression<String>("body")
+            let tokenCount = Expression<Int>("token_count")
 
             let rowid = try self.db.run(documents.insert(
-                body <- doc.body
+                body <- doc.body,
+                tokenCount <- doc.tokenCount
             ))
             return .success(DocumentID(rowid))
         } catch(let error) {
