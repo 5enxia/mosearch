@@ -8,10 +8,11 @@ public class Indexer {
     // メモリから永続化層に書き込む際の閾値
     private let threshold: UInt64
 
-    public init(storage: Storage, analyzer: Analyzer, invertedIndex: InvertedIndex, threshold: UInt64) {
+    // public init(storage: Storage, analyzer: Analyzer, invertedIndex: InvertedIndex, threshold: UInt64) {
+    public init(storage: Storage, analyzer: Analyzer, threshold: UInt64) {
         self.storage = storage
         self.analyzer = analyzer
-        self.invertedIndex = invertedIndex
+        self.invertedIndex = InvertedIndex()
         self.threshold = threshold
     }
 
