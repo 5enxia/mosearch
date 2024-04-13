@@ -11,7 +11,7 @@ Swiftで作成した自作検索エンジンです。（作り途中）
 - [x] Indexer
 - [x] Searcher
   - [x] Sorter
-- [ ] Storage
+- [x] Storage
 
 ## Dependencies
 - [SQLite](https://github.com/stephencelis/SQLite.swift)
