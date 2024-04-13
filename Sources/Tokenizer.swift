@@ -3,6 +3,18 @@ public protocol Tokenizer {
     func tokenize(_ s: String) -> TokenStream
 }
 
+// 簡易
+public struct StandardTokenizer: Tokenizer {
+    public init() {}
+
+    public func tokenize(_ s: String) -> TokenStream {
+        let tokens = s.split(separator: " ").enumerated().map { (i, term) in
+            Token(id: i, term: String(term), kana: "")
+        }
+        return TokenStream(tokens: tokens)
+    }
+}
+
 // 形態素解析
 public struct MorphologicalTokenizer: Tokenizer {
     public init() {}
