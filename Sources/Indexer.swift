@@ -64,7 +64,7 @@ public class Indexer {
         // メモリ上の転置インデックスとストレージの転置インデックスをマージ
         for (tableId, postingList) in self.invertedIndex {
             let memory = postingList
-            guard let storage = storageInvertedIndex[tableId] else { return .success(()) }
+            let storage = storageInvertedIndex[tableId]
             self.invertedIndex[tableId] = self.merge(memory, storage)
         } 
 
@@ -170,7 +170,10 @@ public class Indexer {
     }
 
     // TODO: あとで実装
-    private func merge(_ memory: PostingList, _ storage: PostingList) -> PostingList {
+    private func merge(_ memory: PostingList, _ storage: PostingList?) -> PostingList {
+        guard let storage else {
+            return memory
+        }
         return memory
     }
 }
